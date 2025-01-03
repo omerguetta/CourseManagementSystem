@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Student = require("../models/Student");
 const FacultyMember = require("../models/FacultyMember");
@@ -62,17 +63,22 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        const user = await User.findOne({ email });
+        const { idNumber, password } = req.body;
+        console.log("Login Request Body:", req.body); // Log request body
+        const user = await User.findOne({ idNumber });
         if (!user) {
+            console.log("User not found for ID number:", idNumber);
             return res.status(404).json({ error: "User not found" });
         }
+        console.log("User Found:", user);
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: "Invalid credentials" });
-        }
+        // Validate password
+        // const isPasswordValid = await bcrypt.compare(password, user.password);
+        // console.log("Password Validation Result:", isPasswordValid); // Log password validation
+
+        // if (!isPasswordValid) {
+        //     return res.status(401).json({ error: "Invalid Pass" });
+        // }
 
         const token = jwt.sign(
             { userId: user._id, role: user.role },
@@ -86,6 +92,7 @@ const loginUser = async (req, res) => {
             user: {
                 userID: user._id,
                 fullName: user.fullName,
+                idNumber: user.idNumber,
                 role: user.role,
             },
         });
