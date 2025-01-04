@@ -3,6 +3,7 @@ const express = require("express");
 const logger = require("morgan");
 const connectDB = require("./db_connection");
 const usersRouter = require("./routers/usersRouter");
+const coursesRouter = require("./routers/coursesRouter");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(logger("dev"));
 
 app.use("/api/users", usersRouter);
+app.use("/api/courses", coursesRouter);
 
 app.use((req, res) => {
     res.status(404).send("Page wasn't found");
