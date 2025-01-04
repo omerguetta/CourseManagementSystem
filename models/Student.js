@@ -1,13 +1,13 @@
 const { Schema, model } = require("mongoose");
 
 const studentSchema = new Schema({
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: String},
     studyYear: {
         type: Number,
         enum: [1, 2, 3, 4],
         required: true,
     },
-    courses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
+    courses: [{ type: String}],
 });
 
 module.exports = model("Student", studentSchema, "students");
