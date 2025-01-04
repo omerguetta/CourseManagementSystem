@@ -21,28 +21,26 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ error: "ID number or email is already in use" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         const newUser = new User({
             fullName,
             idNumber,
             address,
             email,
             phone,
-            password: hashedPassword,
+            password,
             role,
         });
         await newUser.save();
 
         if (role === "Student") {
             const newStudent = new Student({
-                userId: newUser._id,
+                userId:idNumber,
                 studyYear,
             });
             await newStudent.save();
         } else if (role === "Staff") {
             const newFaculty = new FacultyMember({
-                userId: newUser._id,
+                userId:idNumber,
             });
             await newFaculty.save();
         }
@@ -64,7 +62,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { idNumber, password } = req.body;
-        console.log("Login Request Body:", req.body); // Log request body
+        console.log("Login Request Body:", req.body);
         const user = await User.findOne({ idNumber });
         if (!user) {
             console.log("User not found for ID number:", idNumber);
@@ -72,13 +70,10 @@ const loginUser = async (req, res) => {
         }
         console.log("User Found:", user);
 
-        // Validate password
-        // const isPasswordValid = await bcrypt.compare(password, user.password);
-        // console.log("Password Validation Result:", isPasswordValid); // Log password validation
-
-        // if (!isPasswordValid) {
-        //     return res.status(401).json({ error: "Invalid Pass" });
-        // }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
 
         const token = jwt.sign(
             { userId: user._id, role: user.role },
@@ -105,4 +100,5 @@ const loginUser = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
+    getUserCourses,
 };
