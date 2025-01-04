@@ -1,9 +1,13 @@
 const { Schema, model } = require("mongoose");
 
-const facultySchema = new Schema({
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    department: { type: String, required: false },
-    courses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
-});
+const courseSchema = new Schema({
+    name: { type: String, required: true },
+    instructor: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    creditPoints: { type: Number, required: true, min: 3, max: 5 },
+    maxStudents: { type: Number, required: true },
+    registeredStudents: [{ type: Schema.Types.ObjectId, ref: "Student" }],
+}, { timestamps: true });
 
-module.exports = model("FacultyMember", facultySchema, "staff");
+const Course = model("Course", courseSchema);
+module.exports = Course;
+
