@@ -34,6 +34,7 @@ const userSchema = new Schema(
             enum: ["Student", "Staff"],
             required: true,
         },
+        courses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
     },
     { collection: "users" }
 );
